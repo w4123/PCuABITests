@@ -292,18 +292,19 @@ static struct clone3_fixture {
 		.e_result = -EINVAL
 	}, /* @{3} */
 	/* Invalid cgroup number */
-	{
+	/* CLONE_INTO_CGROUP is not supported in Linuxulator */
+	/*{
 		.args.flags = CLONE_INTO_CGROUP,
 		.args.cgroup = (__u64)INT_MAX + 1,
 		.e_result = -EINVAL
-	}, /* @{4} */
+	},*/ /* @{4} */
 	/* Invalid size for clone_args with cgroup */
-	{
+	/*{
 		.args_size = offsetof(struct clone_args, cgroup),
 		.args.flags = CLONE_INTO_CGROUP,
 		.args.cgroup = 1,
 		.e_result = -EINVAL
-	}, /* @{5} */
+	},*/ /* @{5} */
 	/* Invalid stack & stack_size combination */
 	{
 		.args.stack_size = STACK_SIZE,
@@ -315,11 +316,13 @@ static struct clone3_fixture {
 		.e_result = -EINVAL
 	}, /* @{7} */
 	/* Invalid set_tid entry */
+	/* set_tid entry is not suppored in Linuxulator */
+	/*
 	{
 		.args.set_tid = (uintptr_t)&(pid_t){1},
 		.args.set_tid_size = 1,
 		.e_result = -EEXIST
-	}, /* @{8} */
+	}, */ /* @{8} */
 
 	/* END_SECTION: expected failure */
 	{

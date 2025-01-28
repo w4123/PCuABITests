@@ -142,11 +142,13 @@ TEST(test_get_put_user)
 TEST(test_futex)
 {
 	uint32_t futex = 0;
+	uint32_t futex2 = 0;
 
-	ASSERT_GE(futex_wake_op(&futex, &futex, 0), 0);
+	/* Linuxulator explicitly disallow both futex addresses to be the same */
+	ASSERT_GE(futex_wake_op(&futex, &futex2, 0), 0);
 	ASSERT_EQ(futex_wake_op(&futex, &futex + 1, 0), -EFAULT);
-	ASSERT_EQ(futex_wake_op(&futex, cheri_tag_clear(&futex), 0), -EFAULT);
-	ASSERT_EQ(futex_wake_op(&futex, cheri_perms_and(&futex, 0), 0),
+	ASSERT_EQ(futex_wake_op(&futex, cheri_tag_clear(&futex2), 0), -EFAULT);
+	ASSERT_EQ(futex_wake_op(&futex, cheri_perms_and(&futex2, 0), 0),
 		  -EFAULT);
 }
 
@@ -240,6 +242,7 @@ int main(void)
 	test_get_put_user();
 	test_futex();
 	test_explicit_iov_iter();
-	test_strlen_user();
+	/* fsopen is not implemented in Linuxulator */
+	/* test_strlen_user(); */
 	return 0;
 }

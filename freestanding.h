@@ -306,7 +306,8 @@ static inline int tmpfd(void)
 	int fd;
 
 	/* First try /tmp, fall back to / if it doesn't exist */
-	fd = openat(0, "/tmp", O_TMPFILE | O_RDWR, 0666);
+	/* Linuxulator does not support O_TMPFILE */
+	fd = openat(0, "/tmp/test_tempfile", O_TRUNC | O_CREAT | O_RDWR, 0666);
 	if (fd == -ENOENT)
 		fd = openat(0, "/", O_TMPFILE | O_RDWR, 0666);
 

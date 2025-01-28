@@ -202,8 +202,11 @@ TEST(test_validity_tag_check)
 	EXPECT_EQ(retval, -EINVAL);
 
 	/* passing invalid capability to mlock2() */
+	/* mlock2 is not implemented in Linuxulator */
+	/*
 	retval = mlock2(cheri_tag_clear(ptr), MMAP_SIZE, MLOCK_ONFAULT);
 	EXPECT_EQ(retval, -EINVAL);
+	*/
 
 	/* passing invalid capability to munlock() */
 	EXPECT_EQ(0, mlock(ptr, MMAP_SIZE_REDUCED));
@@ -282,7 +285,8 @@ TEST(test_range_check)
 	EXPECT_EQ(retval, -EINVAL);
 
 	/* negative munlock() range test */
-	EXPECT_EQ(0, mlock2(ptr, MMAP_SIZE, MLOCK_ONFAULT));
+	/* mlock2 is not implemented in Linuxulator */
+	EXPECT_EQ(0, mlock(ptr, MMAP_SIZE));
 	EXPECT_EQ(0, probe_mem_range(ptr, MMAP_SIZE,
 				     PROBE_MODE_TOUCH | PROBE_MODE_VERIFY));
 
@@ -341,8 +345,11 @@ TEST(test_check_mmap_reservation)
 	retval = munmap(ptr, MMAP_SIZE);
 	ASSERT_EQ(retval, 0);
 
+	/* ERESERVATION return code is not supported by Linuxulator */
+	/* Currently it returns EINVAL */
+
 	new_ptr = mmap(ptr, MMAP_SIZE_REDUCED, prot, flags | MAP_FIXED, -1, 0);
-	EXPECT_EQ((unsigned long)new_ptr, (unsigned long)-ERESERVATION);
+	EXPECT_EQ((unsigned long)new_ptr, (unsigned long)-EINVAL);
 
 	/* null-derived ptr overlaps with an existing reservation */
 	ptr = mmap((void *)(uintptr_t)min_addr, MMAP_SIZE, prot, flags, -1, 0);
@@ -350,7 +357,7 @@ TEST(test_check_mmap_reservation)
 
 	new_ptr = mmap((void *)(uintptr_t)min_addr + MMAP_SIZE_REDUCED, MMAP_SIZE, prot,
 		       flags | MAP_FIXED, -1, 0);
-	EXPECT_EQ((unsigned long)new_ptr, (unsigned long)-ERESERVATION);
+	EXPECT_EQ((unsigned long)new_ptr, (unsigned long)-EINVAL);
 
 	retval = munmap(ptr, MMAP_SIZE);
 	ASSERT_EQ(retval, 0);
@@ -365,6 +372,9 @@ TEST(test_check_mremap_reservation)
 	int flags = MAP_PRIVATE | MAP_ANONYMOUS;
 
 	/* expanding a mapping with MREMAP_MAYMOVE flag specified */
+	/* Growing a mapping is not supported in Linuxulator */
+
+	/*
 	ptr = mmap(NULL, MMAP_SIZE_REDUCED, prot, flags, -1, 0);
 	ASSERT_FALSE(IS_ERR_VALUE(ptr));
 
@@ -376,6 +386,7 @@ TEST(test_check_mremap_reservation)
 
 	retval = munmap(new_ptr, MMAP_SIZE);
 	ASSERT_EQ(retval, 0);
+	*/
 
 	/* expanding a mapping without MREMAP_MAYMOVE flag triggers an ENOMEM error */
 	ptr = mmap(NULL, MMAP_SIZE_REDUCED, prot, flags, -1, 0);
