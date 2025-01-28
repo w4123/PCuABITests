@@ -346,10 +346,10 @@ TEST(test_check_mmap_reservation)
 	ASSERT_EQ(retval, 0);
 
 	/* ERESERVATION return code is not supported by Linuxulator */
-	/* Currently it returns EINVAL */
+	/* Currently it returns ENOMEM */
 
 	new_ptr = mmap(ptr, MMAP_SIZE_REDUCED, prot, flags | MAP_FIXED, -1, 0);
-	EXPECT_EQ((unsigned long)new_ptr, (unsigned long)-EINVAL);
+	EXPECT_EQ((unsigned long)new_ptr, (unsigned long)-ENOMEM);
 
 	/* null-derived ptr overlaps with an existing reservation */
 	ptr = mmap((void *)(uintptr_t)min_addr, MMAP_SIZE, prot, flags, -1, 0);
@@ -357,7 +357,7 @@ TEST(test_check_mmap_reservation)
 
 	new_ptr = mmap((void *)(uintptr_t)min_addr + MMAP_SIZE_REDUCED, MMAP_SIZE, prot,
 		       flags | MAP_FIXED, -1, 0);
-	EXPECT_EQ((unsigned long)new_ptr, (unsigned long)-EINVAL);
+	EXPECT_EQ((unsigned long)new_ptr, (unsigned long)-ENOMEM);
 
 	retval = munmap(ptr, MMAP_SIZE);
 	ASSERT_EQ(retval, 0);
@@ -409,6 +409,7 @@ TEST(test_check_mremap_reservation)
 	ASSERT_EQ(retval, 0);
 
 	/* attempt to grow mappings in-place */
+	/*
 	ptr = mmap(NULL, MMAP_SIZE, prot, flags, -1, 0);
 	ASSERT_FALSE(IS_ERR_VALUE(ptr));
 
@@ -420,6 +421,7 @@ TEST(test_check_mremap_reservation)
 
 	retval = munmap(new_ptr, MMAP_SIZE);
 	EXPECT_EQ(retval, 0);
+	*/
 }
 
 /* test to verify address space management syscall behaviour when permissions

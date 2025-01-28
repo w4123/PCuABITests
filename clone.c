@@ -441,8 +441,11 @@ void run_clone3(struct clone3_fixture *data)
 		result = syscall(__NR_kill, pid, SIGCONT);
 		ASSERT_EQ(result, 0);
 		/* Signal handling is not the test target here: valid pidfd is */
+		/* This feature is not supported by Linuxulator */
+		/*
 		result = syscall(__NR_pidfd_send_signal, pidfd, SIGUSR1, NULL, 0);
 		ASSERT_EQ(result, 0);
+		*/
 	}
 
 	result = waitpid(pid, NULL, 0);
